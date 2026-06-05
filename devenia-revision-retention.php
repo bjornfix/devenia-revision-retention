@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Devenia Revision Retention
  * Description: Keeps recent WordPress revisions plus older anchor revisions so the database stays controlled without losing useful history.
- * Version: 0.1.4
+ * Version: 0.1.5
  * Author: Devenia
  * License: GPL-2.0-or-later
  * Text Domain: devenia-revision-retention
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DEVENIA_REVISION_RETENTION_VERSION', '0.1.4' );
+define( 'DEVENIA_REVISION_RETENTION_VERSION', '0.1.5' );
 define( 'DEVENIA_REVISION_RETENTION_OPTION', 'devenia_revision_retention_options' );
 define( 'DEVENIA_REVISION_RETENTION_LAST_RUN', 'devenia_revision_retention_last_run' );
 define( 'DEVENIA_REVISION_RETENTION_HOOK', 'devenia_revision_retention_cron' );
@@ -460,11 +460,15 @@ final class Devenia_Revision_Retention {
 			}
 
 			$result['revisions_seen'] += count( $revisions );
-			$keep = self::revision_ids_to_keep( $revisions, $options );
-			$result['revisions_kept'] += count( $keep );
+			$decision = self::retention_policy_decision(
+				self::revision_snapshots_from_posts( $revisions ),
+				$options,
+				current_time( 'timestamp' )
+			);
+			$result['revisions_kept'] += count( $decision['keep_ids'] );
 
 			foreach ( $revisions as $revision ) {
-				if ( in_array( $revision->ID, $keep, true ) ) {
+				if ( ! in_array( $revision->ID, $decision['delete_ids'], true ) ) {
 					continue;
 				}
 
@@ -491,28 +495,53 @@ final class Devenia_Revision_Retention {
 	}
 
 	/**
-	 * Compute revision IDs to retain.
+	 * Normalize WordPress revision posts for the retention policy Module.
 	 *
 	 * @param array $revisions Revision posts, newest first.
-	 * @param array $options Plugin options.
 	 * @return array
 	 */
-	private static function revision_ids_to_keep( $revisions, $options ) {
-		$keep = array();
-		$list = array_values( $revisions );
+	private static function revision_snapshots_from_posts( $revisions ) {
+		$snapshots = array();
 
-		foreach ( array_slice( $list, 0, absint( $options['latest_keep'] ) ) as $revision ) {
-			$keep[] = $revision->ID;
+		foreach ( $revisions as $revision ) {
+			$timestamp = mysql2date( 'U', $revision->post_date, false );
+
+			$snapshots[] = array(
+				'id'        => absint( $revision->ID ),
+				'timestamp' => $timestamp ? (int) $timestamp : 0,
+			);
 		}
 
-		$now = current_time( 'timestamp' );
+		return $snapshots;
+	}
+
+	/**
+	 * Decide which revisions the retention policy keeps and deletes.
+	 *
+	 * The input list must be newest first. The policy keeps the latest N
+	 * revisions plus one revision closest to each configured age anchor.
+	 *
+	 * @param array $revision_snapshots Revision snapshots with id and timestamp.
+	 * @param array $options Plugin options.
+	 * @param int   $now_timestamp Current timestamp.
+	 * @return array
+	 */
+	private static function retention_policy_decision( $revision_snapshots, $options, $now_timestamp ) {
+		$keep = array();
+		$list = array_values( $revision_snapshots );
+
+		foreach ( array_slice( $list, 0, absint( $options['latest_keep'] ) ) as $revision ) {
+			$keep[] = absint( $revision['id'] ?? 0 );
+		}
+
+		$now = max( 0, (int) $now_timestamp );
 		foreach ( self::anchor_days( $options ) as $days ) {
 			$target     = $now - ( $days * DAY_IN_SECONDS );
 			$best_id    = 0;
 			$best_delta = null;
 
 			foreach ( $list as $revision ) {
-				$timestamp = mysql2date( 'U', $revision->post_date, false );
+				$timestamp = (int) ( $revision['timestamp'] ?? 0 );
 				if ( ! $timestamp || $timestamp > $now ) {
 					continue;
 				}
@@ -520,7 +549,7 @@ final class Devenia_Revision_Retention {
 				$delta = abs( $timestamp - $target );
 				if ( null === $best_delta || $delta < $best_delta ) {
 					$best_delta = $delta;
-					$best_id    = $revision->ID;
+					$best_id    = absint( $revision['id'] ?? 0 );
 				}
 			}
 
@@ -529,7 +558,20 @@ final class Devenia_Revision_Retention {
 			}
 		}
 
-		return array_values( array_unique( $keep ) );
+		$keep   = array_values( array_filter( array_unique( $keep ) ) );
+		$delete = array();
+
+		foreach ( $list as $revision ) {
+			$id = absint( $revision['id'] ?? 0 );
+			if ( $id && ! in_array( $id, $keep, true ) ) {
+				$delete[] = $id;
+			}
+		}
+
+		return array(
+			'keep_ids'   => $keep,
+			'delete_ids' => $delete,
+		);
 	}
 
 	/**

@@ -56,6 +56,10 @@ The admin screen includes:
 
 ## Changelog
 
+### 0.1.5
+
+- Harden the internal revision retention policy so dry-run and cleanup use the same explicit keep/delete decision.
+
 ### 0.1.4
 
 - Fix release packaging and align WordPress requirement metadata with the Abilities API integration.

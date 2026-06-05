@@ -4,7 +4,7 @@ Tags: revisions, cleanup, retention, database
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 0.1.4
+Stable tag: 0.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,9 @@ The default policy keeps the latest 10 revisions for each supported post or page
 4. Review the defaults and run a dry-run before manual cleanup.
 
 == Changelog ==
+
+= 0.1.5 =
+* Harden the internal revision retention policy so dry-run and cleanup use the same explicit keep/delete decision.
 
 = 0.1.4 =
 * Fix release packaging and align WordPress requirement metadata with the Abilities API integration.
