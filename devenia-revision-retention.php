@@ -2,10 +2,12 @@
 /**
  * Plugin Name: Devenia Revision Retention
  * Description: Keeps recent WordPress revisions plus older anchor revisions so the database stays controlled without losing useful history.
- * Version: 0.1.3
+ * Version: 0.1.4
  * Author: Devenia
  * License: GPL-2.0-or-later
  * Text Domain: devenia-revision-retention
+ * Requires at least: 6.9
+ * Requires PHP: 7.2
  *
  * @package DeveniaRevisionRetention
  */
@@ -14,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DEVENIA_REVISION_RETENTION_VERSION', '0.1.3' );
+define( 'DEVENIA_REVISION_RETENTION_VERSION', '0.1.4' );
 define( 'DEVENIA_REVISION_RETENTION_OPTION', 'devenia_revision_retention_options' );
 define( 'DEVENIA_REVISION_RETENTION_LAST_RUN', 'devenia_revision_retention_last_run' );
 define( 'DEVENIA_REVISION_RETENTION_HOOK', 'devenia_revision_retention_cron' );

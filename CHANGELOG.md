@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- Fix release packaging and align WordPress requirement metadata with the Abilities API integration.
+
 ## 0.1.3
 
 - Improve the admin screen with a plain-language policy summary.
