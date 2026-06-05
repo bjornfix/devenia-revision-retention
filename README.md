@@ -1,6 +1,6 @@
 # Devenia Revision Retention
 
-Keep useful WordPress revision history without letting old revisions grow forever.
+Keeps recent WordPress revisions plus older anchor revisions so the database stays controlled without losing useful history.
 
 [![GitHub release](https://img.shields.io/github/v/release/bjornfix/devenia-revision-retention)](https://github.com/bjornfix/devenia-revision-retention/releases)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
@@ -14,96 +14,81 @@ Keep useful WordPress revision history without letting old revisions grow foreve
 
 ## What It Does
 
-This plugin keeps recent WordPress revisions plus older anchor revisions, so active sites can keep useful rollback points without keeping every old revision forever.
+Keeps recent WordPress revisions plus older anchor revisions so the database stays controlled without losing useful history.
 
-By default it keeps the latest 10 revisions for each supported post or page, plus one older revision near 1, 2, 3, 4, and 10 weeks back.
+This is a small WordPress maintenance plugin built for a specific operational problem. It stays focused so the behavior is easy to understand, verify, and keep enabled.
 
-**Example:** "Keep recent edits available, but do not let five years of revision history accumulate without a policy." - The plugin runs a dry-run, shows what would be removed, and can then clean up revisions outside the keep policy.
+**Example:** "Protect this site from the maintenance issue this plugin handles." - Install the plugin, verify the expected behavior, and let it keep doing that one job.
 
 ## The Real Workflow
 
-In practice, revision cleanup should be predictable and reviewable.
-
-The normal pattern is:
+In practice, the useful path is simple:
 
 1. install and activate the plugin
-2. open **Tools > Revision Retention**
-3. review the current keep policy
-4. run a dry-run first
-5. run cleanup only when the dry-run result looks right
-6. leave scheduled cleanup enabled if the policy fits the site
+2. confirm the behavior on a staging or low-risk page
+3. leave the plugin active when the behavior fits the site
+4. check release notes before updating
 
-The human's job is to choose the policy.
-The plugin's job is to apply it consistently.
+The human's job is to decide whether the behavior fits the site.
+The plugin's job is to apply that behavior consistently.
 
 ## Why This Feels Different
 
-Most revision cleanup is either too blunt or too manual.
+Most small WordPress maintenance problems get handled manually or with broad plugins that do more than needed.
 
-This plugin is different because it keeps a useful shape of history:
+This plugin is different because it keeps a narrow scope:
 
-- recent revisions stay available for short rollback windows
-- older anchor revisions stay available for context
-- dry-run and cleanup use the same explicit keep/delete decision
-- cleanup uses WordPress native revision deletion APIs
+- one clear purpose
+- predictable behavior
+- normal WordPress installation and update flow
+- public source and release history
 
 That changes the experience from:
 
-- `Delete old revisions and hope the useful ones remain`
+- `Remember to handle this manually every time`
 
 to:
 
-- `Keep recent history plus older checkpoints, then remove the rest`
+- `Install the focused plugin and verify the result`
 
 ## Before vs After
 
 ### Before
 
-- every revision can stay around indefinitely
-- cleanup decisions are easy to postpone
-- older rollback points may be lost if cleanup is too aggressive
-- dry-run and cleanup behavior can be hard to reason about
+- the issue depends on manual attention
+- behavior can drift between maintenance runs
+- fixes are easy to forget when work is repetitive
 
 ### After
 
-- the site keeps a clear recent rollback window
-- older anchor revisions remain available
-- cleanup can be reviewed before revisions are removed
-- the keep/delete policy is explicit and consistent
+- the site has a focused plugin for the job
+- behavior is consistent between maintenance runs
+- releases and source are easy to inspect
 
 ## Who It Is For
 
 This is a good fit for:
 
-- WordPress sites with frequent content edits
-- editorial teams that need rollback points without unlimited revision growth
-- agencies maintaining sites where revision volume should stay predictable
-- site owners who want a dry-run before revision cleanup
-
-It is especially useful when revisions are valuable, but keeping every revision forever is not.
+- WordPress site owners with the specific maintenance problem this plugin solves
+- agencies maintaining many WordPress sites
+- operators who prefer focused plugins over broad toolkits
+- teams that want public source and release notes before installing a plugin
 
 ## Documentation
 
 Start with the public plugin page:
 
-- [Devenia Revision Retention](https://devenia.com/plugins/devenia-revision-retention/)
-
-The admin screen is available at:
-
-- **Tools > Revision Retention**
+- [Plugin Page](https://devenia.com/plugins/devenia-revision-retention/)
 
 ## Start Here
 
 If you are new to the plugin, use this order:
 
-1. Install **Devenia Revision Retention**
-2. Open **Tools > Revision Retention**
-3. Check the default policy
-4. Run a dry-run
-5. Review the last-run result
-6. Enable scheduled cleanup if the policy is right for the site
-
-If the site has unusual editorial requirements, adjust the latest revision count, anchor days, post types, and batch limits before running cleanup.
+1. Read the plugin page
+2. Download the latest release
+3. Install it on WordPress
+4. Verify the expected behavior
+5. Keep it active if the behavior matches the site
 
 ## Changelog
 
@@ -133,7 +118,7 @@ If the site has unusual editorial requirements, adjust the latest revision count
 
 ## Contributing
 
-PRs welcome. Keep the plugin focused on WordPress revision retention and predictable cleanup behavior.
+PRs welcome. Keep changes focused on the plugin's stated WordPress maintenance behavior.
 
 ## License
 
@@ -151,7 +136,7 @@ GPL-2.0+
 
 ## Star and Share
 
-If this plugin helps keep WordPress revision history useful and controlled, please:
+If this plugin helps solve a real WordPress maintenance problem, please:
 
 - star the repo
 - share it with people running WordPress sites
